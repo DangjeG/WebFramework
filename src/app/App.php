@@ -6,7 +6,12 @@ class App
 {
     public function run(): string
     {
+<<<<<<< HEAD
         return 'хуй';
+=======
+        return "";
+
+>>>>>>> 9a18d31eb9b0881753f036596403e0cad9792f08
     }
 }
 
