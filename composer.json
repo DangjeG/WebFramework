@@ -24,7 +24,6 @@
     "psr/http-server-handler": "^1.0@dev",
     "psr/http-server-middleware": "^1.0@dev",
     "psr/simple-cache": "^3.0@dev",
-    "psr/http-factory": "^1.0@dev",
-    "php-di/php-di": "dev-master"
+    "psr/http-factory": "^1.0@dev"
   }
 }

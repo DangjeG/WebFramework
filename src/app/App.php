@@ -2,11 +2,19 @@
 
 namespace Dangje\WebFramework;
 
-class App
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+class App implements RequestHandlerInterface
 {
     public function run(): string
     {
-        return "";
 
+    }
+
+    #[\Override] public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        // TODO: Implement handle() method.
     }
 }
