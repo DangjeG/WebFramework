@@ -1,6 +1,6 @@
 <?php
 
-namespace Dangje\WebFramework\Handler;
+namespace Dangje\WebFramework\Message;
 
 
 use Psr\Http\Message\MessageInterface;
