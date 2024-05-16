@@ -92,7 +92,7 @@ class Request implements RequestInterface
     #[\Override] public function withBody(StreamInterface $body): MessageInterface
     {
         $new = clone $this;
-        unset($new->body = $body);
+        $new->body = $body;
         return $new;
     }
 
@@ -104,7 +104,7 @@ class Request implements RequestInterface
     #[\Override] public function withRequestTarget(string $requestTarget): RequestInterface
     {
         $new = clone $this;
-        unset($new->requestTarget = $requestTarget);
+        $new->requestTarget = $requestTarget;
         return $new;
     }
 
@@ -116,7 +116,7 @@ class Request implements RequestInterface
     #[\Override] public function withMethod(string $method): RequestInterface
     {
         $new = clone $this;
-        unset($new->method = $method);
+        $new->method = $method;
         return $new;
     }
 
@@ -128,7 +128,7 @@ class Request implements RequestInterface
     #[\Override] public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
     {
         $new = clone $this;
-        unset($new->uri = $uri);
+        $new->uri = $uri;
         return $new;
     }
 }

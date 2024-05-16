@@ -92,7 +92,7 @@ class Response implements ResponseInterface
     #[\Override] public function withBody(StreamInterface $body): MessageInterface
     {
         $new = clone $this;
-        unset($new->body = $body);
+        $new->body = $body;
         return $new;
     }
 
