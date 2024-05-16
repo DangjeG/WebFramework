@@ -4,7 +4,7 @@ namespace Dangje\WebFramework\DI;
 
 class Container
 {
-    private $services = [];
+    private array $services = [];
 
     public function set(string $id, $service): void
     {
@@ -17,5 +17,10 @@ class Container
             throw new \InvalidArgumentException('No service registered for id ' . $id);
         }
         return $this->services[$id];
+    }
+
+    public function has($id): bool
+    {
+        return array_key_exists($id, $this->services);
     }
 }

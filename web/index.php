@@ -1,6 +1,6 @@
 <?php
 
-use Dangje\WebFramework\App;
+use Dangje\WebFramework\Message\Stream;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -8,10 +8,11 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 echo $app->run();
 */
 
-$entityBody = file_get_contents('php://input');
 
+$st = new Stream('php://input');
 
-echo $entityBody;
+echo $st->getSize();
+
 
 foreach ($_SERVER as $key => $value) {
     if(is_array($value)){
