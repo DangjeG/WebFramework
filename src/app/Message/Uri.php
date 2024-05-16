@@ -1,27 +1,27 @@
 <?php
 
-namespace Dangje\WebFramework;
+namespace Dangje\WebFramework\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface {
 
-    private const DEFAULT_PORTS = [
+    private const array DEFAULT_PORTS = [
         'http' => 80,
         'https' => 443
     ];
-    private const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
-    private const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
+    private const string CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
+    private const string CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
-    private $scheme = '';
-    private $userInfo = '';
-    private $host = '';
-    private $port;
-    private $path = '';
-    private $query = '';
-    private $fragment = '';
-    private $uriString;
+    private string $scheme = '';
+    private string $userInfo = '';
+    private string $host = '';
+    private string $port;
+    private string $path = '';
+    private string $query = '';
+    private string $fragment = '';
+    private string $uriString;
 
     public function __construct($uri = '') {
         if (!is_string($uri)) {

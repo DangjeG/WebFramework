@@ -2,6 +2,7 @@
 
 namespace Dangje\WebFramework\Factory;
 
+use Dangje\WebFramework\Message\Uri;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
