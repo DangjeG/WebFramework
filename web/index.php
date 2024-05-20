@@ -43,10 +43,12 @@ $app->add('GET', '/', function (ServerRequestInterface $request) {
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $conteiner = new Container();
+$config = require '../src/app/DI/dependencies.php';
+$container = new Container($config);
 
-$request = $conteiner->get(Request::class);
+$car = $container->get('Car');
 
-echo $request->getMethod();
+echo $car->start();
 
 /*$app = new App();
 echo $app->run();
@@ -77,7 +79,10 @@ echo $resp->getBody()->getContents();
 
 $st = new Stream('php://input');
 
-echo $st->getSize();
+// $st = new Stream('php://input');
+
+
+// echo $st->getSize();
 
 // echo $entityBody;
 
