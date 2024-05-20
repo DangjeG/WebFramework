@@ -7,11 +7,12 @@ use Dangje\WebFramework\Handler\Request;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$conteiner = new Container();
+$config = require '../src/app/DI/dependencies.php';
+$container = new Container($config);
 
-$request = $conteiner->get(Request::class);
+$car = $container->get('Car');
 
-echo $request->getMethod();
+echo $car->start();
 
 /*$app = new App();
 echo $app->run();
@@ -20,9 +21,9 @@ echo $app->run();
 //$entityBody = file_get_contents('php://input');
 
 
-$st = new Stream('php://input');
+// $st = new Stream('php://input');
 
-echo $st->getSize();
+// echo $st->getSize();
 
 // echo $entityBody;
 
