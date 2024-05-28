@@ -2,26 +2,38 @@
 
 namespace Dangje\WebFramework;
 
-use Route;
+use Dangje\WebFramework\Handler\RequestHandler;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 
 class App 
 {
- 
-    private $routes = [];
+    private array $routes;
+    private ServerRequestFactoryInterface $serverRequestFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-
-    public function add( string $path, $metod, callable $handler){
-        $this->routes[] = new Route($metod, $path, $handler);
+    public function __construct(ServerRequestFactoryInterface $serverRequestFactory, ResponseFactoryInterface $responseFactory)
+    {
+        $this->serverRequestFactory = $serverRequestFactory;
+        $this->responseFactory = $responseFactory;
+        $this->routes = [];
     }
 
-    public function run(): void
+    public function add( string $path, $method, callable $handleFunc): void
     {
-        
+        $this->routes[] = new Route($path, $method, new RequestHandler($handleFunc));
+    }
+
+    public function run(): ResponseInterface
+    {
+        $request = $this->serverRequestFactory->createServerRequestFromGlobals();
         foreach ($this->routes as $route) {
             if ($route->isMatch($request)) {
                 return $route->handle();
             }
         }
+        return $this->responseFactory->createResponse(404, 'Not Found');
     }
 }
 

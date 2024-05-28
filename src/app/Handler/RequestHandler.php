@@ -9,8 +9,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestHandler implements RequestHandlerInterface {
 
-
-    public $handleFunc;
+    private $handleFunc;
 
     public function __construct(callable $handleFunc)
     {

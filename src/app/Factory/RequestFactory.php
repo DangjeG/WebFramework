@@ -11,7 +11,7 @@ use Psr\Http\Message\StreamInterface;
 class RequestFactory implements RequestFactoryInterface
 {
 
-    #[\Override] public function createRequest(string $method, $uri): RequestInterface
+    public function createRequest(string $method, $uri): RequestInterface
     {
         $requestTarget = '/';
         if (isset($_SERVER['REQUEST_TARGET']))
@@ -21,27 +21,13 @@ class RequestFactory implements RequestFactoryInterface
             $requestTarget,
             $method,
             $uri,
-            $this->getHeaders(),
-            $this->getBody()
+            getallheaders(),
+            $this->getBody(),
         );
     }
 
     private function getBody(): StreamInterface
     {
         return new Stream('php://input');
-    }
-
-    private function getHeaders(): array
-    {
-        $headers = [];
-        foreach ($_SERVER as $key => $value) {
-            if (str_starts_with($key, 'HTTP_')) {
-                $headerName = str_replace('HTTP_', '', $key);
-                $headerName = str_replace('_', '-', $headerName);
-                $headers[$headerName] = $value;
-            }
-        }
-
-        return $headers;
     }
 }
