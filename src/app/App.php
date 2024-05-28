@@ -2,22 +2,30 @@
 
 namespace Dangje\WebFramework;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Route;
 
-class App implements RequestHandlerInterface
+class App 
 {
-    public function run(): string
-    {
-        return "";
+ 
+    private $routes = [];
+
+
+    public function add( string $path, $metod, callable $handler){
+        $this->routes[] = new Route($metod, $path, $handler);
     }
 
-    #[\Override] public function handle(ServerRequestInterface $request): ResponseInterface
+    public function run(): void
     {
-        // TODO: Implement handle() method.
+        
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($request)) {
+                return $route->handle();
+            }
+        }
     }
 }
+
+
 
 // собственный фреймворк с парой страничек, авторизация на варе, обработка ошибок, настройки, сервис локатор, диай
 // 1) только пср пакеты
