@@ -2,32 +2,73 @@
 
 namespace Dangje\WebFramework;
 
+use Dangje\WebFramework\Handler\Middleware;
+use Dangje\WebFramework\Handler\RequestHandler;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
-class App implements RequestHandlerInterface
+class App 
 {
-    public function run(): string
+    private array $routes;
+    private ServerRequestFactoryInterface $serverRequestFactory;
+    private ResponseFactoryInterface $responseFactory;
+
+    public function __construct(ServerRequestFactoryInterface $serverRequestFactory, ResponseFactoryInterface $responseFactory)
     {
-        return "";
+        $this->serverRequestFactory = $serverRequestFactory;
+        $this->responseFactory = $responseFactory;
+        $this->routes = [];
     }
 
-    #[\Override] public function handle(ServerRequestInterface $request): ResponseInterface
+    public function add( string $method, $path, callable $handleFunc): void
     {
-        // TODO: Implement handle() method.
+        $this->routes[] = new Route($method, $path, new RequestHandler($handleFunc));
+    }
+
+    public function setHandler(string $method, $path, callable $handleFunc): void
+    {
+        $request = $this->serverRequestFactory->createServerRequest($method, $path);
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($request)) {
+                $route = $route->withHandler(new RequestHandler($handleFunc));
+                return;
+            }
+        }
+        $this->routes[] = new Route($method, $path, new RequestHandler($handleFunc));
+    }
+
+    public function setMiddlewareHandler(string $method, $path, callable $handleFunc): void
+    {
+        $request = $this->serverRequestFactory->createServerRequest($method, $path);
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($request)) {
+                $route->addMiddlewareHandler(new RequestHandler($handleFunc));
+                return;
+            }
+        }
+    }
+
+    public function setMiddleware(string $method, $path, MiddlewareInterface $middleware): void
+    {
+        $request = $this->serverRequestFactory->createServerRequest($method, $path);
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($request)) {
+                $route = $route->withMiddleware($middleware);
+                return;
+            }
+        }
+    }
+
+    public function run(): ResponseInterface
+    {
+        $request = $this->serverRequestFactory->createServerRequest();
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($request)) {
+                return $route->process($request);
+            }
+        }
+        return $this->responseFactory->createResponse(404, 'Not Found');
     }
 }
-
-// собственный фреймворк с парой страничек, авторизация на варе, обработка ошибок, настройки, сервис локатор, диай
-// 1) только пср пакеты
-// 2) слоистая архитектура
-// 3) диай
-// 4) авторизация
-// 5) Сессии бирер токен
-// 6) ответ на основе заголовка ассепт
-// 7) обработка запросов на основе контент тайп
-// 8) обработка ошибок минимум 500 и 404
-// 9) шаблонизатор для вывода ответа
-// 10) 2-3 странички или тесты
-// 11) кодсниффер желательно линтер

@@ -17,11 +17,11 @@ class Uri implements UriInterface {
     private string $scheme = '';
     private string $userInfo = '';
     private string $host = '';
-    private string $port;
+    private string $port = '';
     private string $path = '';
     private string $query = '';
     private string $fragment = '';
-    private string $uriString;
+    private string $uriString = '';
 
     public function __construct($uri = '') {
         if (!is_string($uri)) {
@@ -157,13 +157,13 @@ class Uri implements UriInterface {
             );
         }
 
-        if (strpos($path, '?') !== false) {
+        if (str_contains($path, '?')) {
             throw new InvalidArgumentException(
                 'Invalid path provided; must not contain a query string'
             );
         }
 
-        if (strpos($path, '#') !== false) {
+        if (str_contains($path, '#')) {
             throw new InvalidArgumentException(
                 'Invalid path provided; must not contain a URI fragment'
             );
@@ -188,7 +188,7 @@ class Uri implements UriInterface {
             );
         }
 
-        if (strpos($query, '#') !== false) {
+        if (str_contains($query, '#')) {
             throw new InvalidArgumentException(
                 'Query string must not include a URI fragment'
             );
@@ -219,7 +219,8 @@ class Uri implements UriInterface {
         return $new;
     }
 
-    public function __toString() {
+    public function __toString(): string
+    {
         if ($this->uriString !== null) {
             return $this->uriString;
         }
@@ -235,7 +236,8 @@ class Uri implements UriInterface {
         return $this->uriString;
     }
 
-    private static function createUriString($scheme, $authority, $path, $query, $fragment) {
+    private static function createUriString($scheme, $authority, $path, $query, $fragment): string
+    {
         $uri = '';
 
         if (! empty($scheme)) {
@@ -247,7 +249,7 @@ class Uri implements UriInterface {
         }
 
         if ($path) {
-            if (empty($path) || '/' !== substr($path, 0, 1)) {
+            if (empty($path) || !str_starts_with($path, '/')) {
                 $path = '/' . $path;
             }
 
@@ -265,7 +267,8 @@ class Uri implements UriInterface {
         return $uri;
     }
 
-    private function parseUri($uri) {
+    private function parseUri($uri): void
+    {
         $parts = parse_url($uri);
 
         if ($parts === false) {
@@ -275,9 +278,9 @@ class Uri implements UriInterface {
         }
 
         $this->scheme    = isset($parts['scheme'])   ? $this->filterScheme($parts['scheme']) : '';
-        $this->userInfo  = isset($parts['user'])     ? $parts['user']     : '';
-        $this->host      = isset($parts['host'])     ? $parts['host']     : '';
-        $this->port      = isset($parts['port'])     ? $parts['port']     : null;
+        $this->userInfo  = $parts['user'] ?? '';
+        $this->host      = $parts['host'] ?? '';
+        $this->port      = $parts['port'] ?? '';
         $this->path      = isset($parts['path'])     ? $this->filterPath($parts['path']) : '';
         $this->query     = isset($parts['query'])    ? $this->filterQuery($parts['query']) : '';
         $this->fragment  = isset($parts['fragment']) ? $this->filterFragment($parts['fragment']) : '';
@@ -298,7 +301,8 @@ class Uri implements UriInterface {
         return ! isset(self::DEFAULT_PORTS[$scheme]) || $port !== self::DEFAULT_PORTS[$scheme];
     }
 
-    private function filterScheme($scheme) {
+    private function filterScheme($scheme): array|string
+    {
         $scheme = strtolower($scheme);
         $scheme = preg_replace('#:(//)?$#', '', $scheme);
 
@@ -317,7 +321,8 @@ class Uri implements UriInterface {
         return $scheme;
     }
 
-    private function filterPath($path) {
+    private function filterPath($path): array|string|null
+    {
         return preg_replace_callback(
             '/(?:[^' . self::CHAR_UNRESERVED . ':@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'urlEncodeChar'],
@@ -325,14 +330,14 @@ class Uri implements UriInterface {
         );
     }
 
-    private function urlEncodeChar(array $matches)
+    private function urlEncodeChar(array $matches): string
     {
         return rawurlencode($matches[0]);
     }
 
-    private function filterQuery($query)
+    private function filterQuery($query): string
     {
-        if (! empty($query) && strpos($query, '?') === 0) {
+        if (! empty($query) && str_starts_with($query, '?')) {
             $query = substr($query, 1);
         }
 
@@ -353,7 +358,7 @@ class Uri implements UriInterface {
         return implode('&', $parts);
     }
 
-    private function splitQueryValue($value)
+    private function splitQueryValue($value): array
     {
         $data = explode('=', $value, 2);
         if (count($data) === 1) {
@@ -362,20 +367,20 @@ class Uri implements UriInterface {
         return $data;
     }
 
-    private function filterFragment($fragment)
+    private function filterFragment($fragment): array|string|null
     {
         if ($fragment === null) {
             $fragment = '';
         }
 
-        if (! empty($fragment) && strpos($fragment, '#') === 0) {
+        if (! empty($fragment) && str_starts_with($fragment, '#')) {
             $fragment = substr($fragment, 1);
         }
 
         return $this->filterQueryOrFragment($fragment);
     }
 
-    private function filterQueryOrFragment($value)
+    private function filterQueryOrFragment($value): array|string|null
     {
         return preg_replace_callback(
             '/(?:[^' . self::CHAR_UNRESERVED . self::CHAR_SUB_DELIMS . '%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',
