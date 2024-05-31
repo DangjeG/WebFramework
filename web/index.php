@@ -1,7 +1,6 @@
 <?php
 
 use Dangje\WebFramework\App;
-use Dangje\WebFramework\DI\Container;
 use Dangje\WebFramework\Factory\ResponseFactory;
 use Dangje\WebFramework\Factory\ServerRequestFactory;
 use Dangje\WebFramework\Message\Response;
@@ -11,11 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 
-$config = require '../src/app/DI/dependencies.php';
-$container = new Container($config);
-
-
-$serverRequestFactory = new ServerRequestFactory($container);
+$serverRequestFactory = new ServerRequestFactory();
 $responseFactory = new ResponseFactory();
 
 $app = new App($serverRequestFactory, $responseFactory);
