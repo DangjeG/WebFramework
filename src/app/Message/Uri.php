@@ -17,11 +17,11 @@ class Uri implements UriInterface {
     private string $scheme = '';
     private string $userInfo = '';
     private string $host = '';
-    private string $port;
+    private string $port = '';
     private string $path = '';
     private string $query = '';
     private string $fragment = '';
-    private string $uriString;
+    private string $uriString = '';
 
     public function __construct($uri = '') {
         if (!is_string($uri)) {
@@ -280,7 +280,7 @@ class Uri implements UriInterface {
         $this->scheme    = isset($parts['scheme'])   ? $this->filterScheme($parts['scheme']) : '';
         $this->userInfo  = $parts['user'] ?? '';
         $this->host      = $parts['host'] ?? '';
-        $this->port      = $parts['port'] ?? null;
+        $this->port      = $parts['port'] ?? '';
         $this->path      = isset($parts['path'])     ? $this->filterPath($parts['path']) : '';
         $this->query     = isset($parts['query'])    ? $this->filterQuery($parts['query']) : '';
         $this->fragment  = isset($parts['fragment']) ? $this->filterFragment($parts['fragment']) : '';

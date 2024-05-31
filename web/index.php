@@ -1,39 +1,36 @@
 <?php
 
 use Dangje\WebFramework\App;
+use Dangje\WebFramework\DI\Container;
+use Dangje\WebFramework\Factory\RequestFactory;
+use Dangje\WebFramework\Factory\ResponseFactory;
+use Dangje\WebFramework\Factory\ServerRequestFactory;
+use Dangje\WebFramework\Factory\UriFactory;
+use Dangje\WebFramework\Message\Response;
 use Dangje\WebFramework\Message\Stream;
+use Psr\Http\Message\RequestInterface;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-/*$app = new App();
-echo $app->run();*/
 
+$container = new Container();
+$container->set(new ResponseFactory());
+$container->set(new RequestFactory($container));
+$container->set(new UriFactory());
+$container->set(new ServerRequestFactory($container));
 
+$serverRequestFactory = new ServerRequestFactory($container);
+$responseFactory = new ResponseFactory();
 
-$st = new Stream('php://input');
+$app = new App($serverRequestFactory, $responseFactory);
 
+$app->add('GET', '/', function (RequestInterface $request) {
+    $resp = new Response(200, 'Hello World!');
+    return $resp->withBody(new Stream(data: 'Hello World!'));
+});
 
+$resp = $app->run();
 
+http_response_code($resp->getStatusCode());
 
-foreach ($_COOKIE as $key => $value) {
-     if(is_array($value)){
-         echo '<pre>';
-         echo "{$key} => ... ";
-         echo '</pre>';
-         foreach ($value as $key1 => $value1) {
-             echo '<pre>';
-             echo "{$key1} => {$value1} ";
-             echo '</pre>';
-         }
-     }
-     echo '<pre>';
-     echo "{$key} => {$value} ";
-     echo '</pre>';
- }
-
-
-/* foreach ($_GET as $key => $value) {
-     echo '<pre>';
-     echo "{$key} => {$value} ";
-     echo '</pre>';
- }*/
+echo $resp->getBody()->getContents();

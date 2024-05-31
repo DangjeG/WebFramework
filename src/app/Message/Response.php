@@ -12,7 +12,7 @@ use Psr\Http\Message\StreamInterface;
 class Response implements ResponseInterface
 {
 
-    private string $protocolVersion = '1.0';
+    private string $protocolVersion = '1.1';
     private array $headers;
     private StreamInterface $body;
     private int $statusCode;
@@ -26,7 +26,7 @@ class Response implements ResponseInterface
         ?StreamInterface $body = null,
     ) {
         $this->headers= $headers;
-        $this->body= $body;
+        $this->body= is_null($body)? new Stream() : $body;
         $this->statusCode= $statusCode;
         $this->reasonPhrase= $reasonPhrase;
     }

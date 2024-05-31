@@ -20,7 +20,8 @@ class ServerRequest implements ServerRequestInterface
     private array $cookieParams;
     private array $uploadedFiles;
     private array $attributes;
-    private array $parsedBody;
+    private ?array $parsedBody;
+    private array $queryParams;
 
 
     public function __construct(
@@ -28,14 +29,15 @@ class ServerRequest implements ServerRequestInterface
         string $method,
         UriInterface $uri,
         array $serverParams,
-        ?array $headers = [],
+        array $headers = [],
         ?StreamInterface $body = null,
         array $cookieParams = [],
         array $uploadedFiles = [],
         array $attributes = [],
+        array $queryParams = [],
     ) {
         $this->headers = $headers;
-        $this->body = $body;
+        $this->body = is_null($body) ? new Stream() : $body;
         $this->requestTarget = $requestTarget;
         $this->method = $method;
         $this->uri = $uri;
@@ -43,7 +45,8 @@ class ServerRequest implements ServerRequestInterface
         $this->cookieParams = $cookieParams;
         $this->uploadedFiles = $uploadedFiles;
         $this->attributes = $attributes;
-        $this->parsedBody = json_decode($this->body->getContents(), true);
+        $this->parsedBody =  json_decode($this->body->getContents(), true);
+        $this->queryParams = $queryParams;
     }
 
     public function getServerParams(): array
@@ -65,14 +68,13 @@ class ServerRequest implements ServerRequestInterface
 
     public function getQueryParams(): array
     {
-        parse_str($this->getUri()->getQuery(), $query);
-        return $query;
+        return $this->queryParams;
     }
 
     public function withQueryParams(array $query): ServerRequestInterface
     {
         $newRequest = clone $this;
-        $newRequest->uri = $newRequest->uri->withQuery(http_build_query($query));
+        $newRequest->queryParams = $query;
         return $newRequest;
     }
 

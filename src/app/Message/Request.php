@@ -24,7 +24,7 @@ class Request implements RequestInterface
         ?StreamInterface $body = null,
     ) {
         $this->headers = $headers;
-        $this->body = $body;
+        $this->body = is_null($body) ? new Stream() : $body;
         $this->requestTarget = $requestTarget;
         $this->method = $method;
         $this->uri = $uri;

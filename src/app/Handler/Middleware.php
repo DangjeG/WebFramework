@@ -11,17 +11,19 @@ class Middleware implements MiddlewareInterface{
 
     private array $handlers;
 
-    public function __construct(array $handlers)
+    public function __construct(array $handlers = [])
     {
-        $this->$handlers = $handlers;
+        $this->handlers = $handlers;
     }
 
-    public function addHandler(RequestHandler $next): void
+    public function withAddedHandler(RequestHandler $next): MiddlewareInterface
     {
-        $this->handlers[] = $next;
+        $new = clone $this;
+        $new->handlers[] = $next;
+        return $new;
     }
 
-    #[\Override] public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface{
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface{
 
         foreach ($this->handlers as $nextHandler) {
             $response = $nextHandler->handle($request);

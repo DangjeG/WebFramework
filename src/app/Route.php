@@ -15,13 +15,17 @@ class Route {
     private RequestHandlerInterface $handler;
     private MiddlewareInterface $middleware;
 
-    public function __construct(string $method, string $path, RequestHandlerInterface $handler) {
+    public function __construct(
+        string $method,
+        string $path,
+        RequestHandlerInterface $handler,
+        MiddlewareInterface $middleware = null,
+    ) {
         $this->method = $method;
         $this->path = $path;
         $this->handler = $handler;
-        $this->middleware = new Middleware([]);
+        $this->middleware = is_null($middleware) ? new Middleware() : $middleware;
     }
-
 
     public function getMethod(): string
     {
@@ -36,6 +40,32 @@ class Route {
     public function getHandler(): RequestHandlerInterface
     {
         return $this->handler;
+    }
+
+    public function withHandler(RequestHandlerInterface $handler): Route
+    {
+        $new = clone $this;
+        $new->handler = $handler;
+        return $new;
+    }
+
+    public function getMiddleware(): MiddlewareInterface
+    {
+        return $this->middleware;
+    }
+
+    public function withMiddleware(MiddlewareInterface $middleware): Route
+    {
+        $new = clone $this;
+        $new->middleware = $middleware;
+        return $new;
+    }
+
+    public function withAddedMiddlewareHandler(RequestHandlerInterface $handler): Route
+    {
+        $new = clone $this;
+        $new->middleware = $this->middleware->withAddedHandler($handler);
+        return $new;
     }
 
     public function isMatch(ServerRequestInterface $request): bool

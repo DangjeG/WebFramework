@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseFactory implements ResponseFactoryInterface
 {
-
     public function createResponse(int $code = 200, string $reasonPhrase = 'OK'): ResponseInterface
     {
         return new Response($code, $reasonPhrase);

@@ -6,12 +6,12 @@ class Container
 {
     private array $services = [];
 
-    public function set(string $id, $service): void
+    public function set($service): void
     {
-        $this->services[$id] = $service;
+        $this->services[$service::class] = $service;
     }
 
-    public function get(string $id): object
+    public function get($id): object
     {
         if (!isset($this->services[$id])) {
             throw new \InvalidArgumentException('No service registered for id ' . $id);

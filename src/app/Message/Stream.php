@@ -8,9 +8,12 @@ class Stream implements StreamInterface
 {
     private $stream;
 
-    public function __construct(string $filename = '') {
-
-        $this->stream = fopen($filename, 'rwb');
+    public function __construct(string $filename = '', $data = '')
+    {
+        if($filename == '')
+            $this->stream = fopen('data://text/plain,' . $data, 'r');
+        else
+            $this->stream = fopen($filename, 'rwb');
     }
     public function __toString(): string
     {

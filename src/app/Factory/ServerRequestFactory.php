@@ -17,14 +17,13 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     public function __construct(Container $container){
         $this->container = $container;
     }
-    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
+    public function createServerRequest(string $method = '', $uri = '', array $serverParams = []): ServerRequestInterface
     {
-        return new ServerRequest(requestTarget: '', method: $method, uri: $uri, serverParams: $serverParams);
-    }
-    public function createServerRequestFromGlobals(): ServerRequestInterface{
-        $uriFactory = $this->container->get(UriFactoryInterface::class);
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri = $uriFactory->createUri($_SERVER['REQUEST_URI']);
+        $uriFactory = $this->container->get(UriFactory::class);
+        $method =
+            $method != ''  ? $method : $_SERVER['REQUEST_METHOD'];;
+        $uri = $uriFactory->createUri(
+            $uri != '' ? $uri : $_SERVER['REQUEST_URI']);
 
         return new ServerRequest(
             "/",
@@ -36,9 +35,9 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $_COOKIE,
             $_FILES,
             [],
+            $_GET
         );
     }
-
     private function getBody(): StreamInterface
     {
         return new Stream('php://input');
