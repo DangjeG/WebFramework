@@ -54,18 +54,14 @@ class Route {
         return $this->middleware;
     }
 
-    public function withMiddleware(MiddlewareInterface $middleware): Route
+    public function setMiddleware(MiddlewareInterface $middleware): void
     {
-        $new = clone $this;
-        $new->middleware = $middleware;
-        return $new;
+        $this->middleware = $middleware;
     }
 
-    public function withAddedMiddlewareHandler(RequestHandlerInterface $handler): Route
+    public function addMiddlewareHandler(RequestHandlerInterface $handler): void
     {
-        $new = clone $this;
-        $new->middleware = $this->middleware->withAddedHandler($handler);
-        return $new;
+        $this->middleware = $this->middleware->withAddedHandler($handler);
     }
 
     public function isMatch(ServerRequestInterface $request): bool
