@@ -2,25 +2,18 @@
 
 namespace Dangje\WebFramework\Factory;
 
-use Dangje\WebFramework\DI\Container;
 use Dangje\WebFramework\Message\Request;
 use Dangje\WebFramework\Message\Stream;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriFactoryInterface;
 
 class RequestFactory implements RequestFactoryInterface
 {
-    private Container $container;
-
-    public function __construct(Container $container){
-        $this->container = $container;
-    }
 
     public function createRequest(string $method = '', $uri = ''): RequestInterface
     {
-        $uriFactory = $this->container->get(UriFactory::class);
+        $uriFactory = new UriFactory();
         $requestTarget =
             $_SERVER['REQUEST_TARGET'] ?? '/';
         $method =
