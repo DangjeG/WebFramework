@@ -7,6 +7,7 @@ use Dangje\WebFramework\Factory\ResponseFactory;
 use Dangje\WebFramework\Factory\ServerRequestFactory;
 use Dangje\WebFramework\Factory\UriFactory;
 use Dangje\WebFramework\Message\Response;
+use Dangje\WebFramework\ErrorHandler;
 use Dangje\WebFramework\Message\Stream;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -55,6 +56,8 @@ echo $app->run();
 */
 //$entityBody = file_get_contents('php://input');
 
+$error = new ErrorHandler();
+$error->register();
 
 $app->setMiddlewareHandler('GET', '/', function (ServerRequestInterface $request) {
     $resp = new Response(200, 'Hello World!');
@@ -86,6 +89,17 @@ $st = new Stream('php://input');
 
 // echo $entityBody;
 
+//echo $undefined_var;
+
+//undefined_function();
+
+throw new \InvalidArgumentException("капец");
+
+// $st = new Stream('php://input');
+
+// echo $st->getSize();
+
+
 // foreach ($_SERVER as $key => $value) {
 //     if(is_array($value)){
 //         echo '<pre>';
@@ -112,4 +126,5 @@ $st = new Stream('php://input');
 // function some ()
 // {
 //     return "ret";
+// }
 // }
