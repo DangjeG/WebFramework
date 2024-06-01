@@ -35,6 +35,7 @@ class ServerRequest implements ServerRequestInterface
         array $uploadedFiles = [],
         array $attributes = [],
         array $queryParams = [],
+        array $parsedBody = []
     ) {
         $this->headers = $headers;
         $this->body = is_null($body) ? new Stream() : $body;
@@ -45,7 +46,7 @@ class ServerRequest implements ServerRequestInterface
         $this->cookieParams = $cookieParams;
         $this->uploadedFiles = $uploadedFiles;
         $this->attributes = $attributes;
-        $this->parsedBody =  json_decode($this->body->getContents(), true);
+        $this->parsedBody = $parsedBody;
         $this->queryParams = $queryParams;
     }
 

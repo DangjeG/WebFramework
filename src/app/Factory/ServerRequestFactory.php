@@ -29,7 +29,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $_COOKIE,
             $_FILES,
             [],
-            $_GET
+            $_GET,
+            $_POST,
         );
     }
     private function getBody(): StreamInterface

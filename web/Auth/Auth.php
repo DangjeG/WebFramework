@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Slide Navbar</title>
-    <link rel="stylesheet" type="text/css" href="./style.css">
+    <link rel="stylesheet" type="text/css" href="./Auth/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -19,11 +19,11 @@
     </div>
 
     <div class="login">
-        <form>
+        <form method="post" action="/logi">
             <label for="chk" aria-hidden="true">Login</label>
             <input type="email" name="email" placeholder="Email" required="">
             <input type="password" name="pswd" placeholder="Password" required="">
-            <button>Login</button>
+            <button type="submit">Login</button>
         </form>
     </div>
 </div>
