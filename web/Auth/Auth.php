@@ -10,16 +10,16 @@
     <input type="checkbox" id="chk" aria-hidden="true">
 
     <div class="signup">
-        <form>
+        <form method="post" action="/signin">
             <label for="chk" aria-hidden="true">Sign up</label>
             <input type="email" name="email" placeholder="Email" required="">
             <input type="password" name="pswd" placeholder="Password" required="">
-            <button>Sign up</button>
+            <button type="submit">Sign up</button>
         </form>
     </div>
 
     <div class="login">
-        <form method="post" action="/logi">
+        <form method="post" action="/login">
             <label for="chk" aria-hidden="true">Login</label>
             <input type="email" name="email" placeholder="Email" required="">
             <input type="password" name="pswd" placeholder="Password" required="">

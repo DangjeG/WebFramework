@@ -12,42 +12,99 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $serverRequestFactory = new ServerRequestFactory();
 $responseFactory = new ResponseFactory();
+$salt = "fdlkgmlklk";
 
 $app = new App($serverRequestFactory, $responseFactory);
 
-$app->add('GET', '/logi', function (ServerRequestInterface $request) {
+session_start();
+
+$app->add('GET', '/auth', function (ServerRequestInterface $request) {
     $resp = new Response(200, 'Hello World!');
     return $resp->withBody(new Stream('./Auth/Auth.php'));
 });
 
-$app->add('POST', '/logi', function (ServerRequestInterface $request) {
+$app->add('GET', '/logout', function (ServerRequestInterface $request) {
+
     $resp = new Response(200, 'Hello World!');
-    return $resp->withBody(new Stream(data: json_encode($request->getParsedBody())));
+    setcookie('Authorization', '');
+
+    return $resp->withBody(new Stream('./Auth/Auth.php'));
 });
 
+$app->add('POST', '/login', function (ServerRequestInterface $request) {
+    $resp = new Response(200, 'OK');
+
+    $email = $request->getParsedBody()['email'];
+    $password = $request->getParsedBody()['pswd'];
+    $salt = "fdlkgmlklk";
+
+    $emailHash = crypt($email, $salt);
+
+    if(isset($_SESSION[$emailHash])){
+        
+        $userData = explode(';', $_SESSION[$emailHash], 2);
+        if($password == $userData[1]){
+            setcookie('Authorization', $emailHash);
+            $resp = $resp->withStatus(200, 'OK');
+            $resp = $resp->withBody(new Stream('./MainPage/MainPage.php'));
+
+        }
+        else{
+            $resp = $resp->withStatus(401, 'Invalid password');
+            $resp = $resp->withBody(new Stream('./Auth/Auth.php'));
+        }
+    }
+    else{
+        $resp = $resp->withStatus(401, 'User not exist');
+        $resp = $resp->withBody(new Stream('./Auth/Auth.php'));
+    }
+
+    return $resp;
+});
+
+$app->add('POST', '/signin', function (ServerRequestInterface $request) {
+    $resp = new Response(200, 'Hello World!');
+
+    $email = $request->getParsedBody()['email'];
+    $password = $request->getParsedBody()['pswd'];
+    $salt = "fdlkgmlklk";
+
+
+    $emailHash = crypt($email, $salt);
+    if(!isset($_SESSION[$emailHash])){
+        $_SESSION[$emailHash] = implode(';', [$email, $password]);
+        setcookie('Authorization', $emailHash);
+
+        $resp = $resp->withStatus(200, 'OK');
+        $resp = $resp->withBody(new Stream('./MainPage/MainPage.php'));
+    }
+    else{
+        $resp = $resp->withStatus(409, "User already exist");
+        $resp = $resp->withBody(new Stream('./Auth/Auth.php'));
+    }
+
+    return $resp;
+});
 
 
 $app->add('GET', '/', function (ServerRequestInterface $request) {
-    $resp = new Response(200, 'Hello World!');
-
-    $bodyStr = json_encode($request->getQueryParams());
-
-    $resp->withHeader("Content-Type", "application/json");
+    $resp = new Response(200, 'OK');
     return $resp->withBody(new Stream('./MainPage/MainPage.php'));
 });
 
+
 $app->setMiddlewareHandler('GET', '/', function (ServerRequestInterface $request) {
-    $resp = new Response(200, 'Hello World!');
-    if(isset($request->getQueryParams()['ddd'])
-        && $request->getQueryParams()['ddd'] == '123'){
-        $resp = $resp->withBody(new Stream(data: ''));
+    $resp = new Response(200, 'OK');
+    if(isset($request->getCookieParams()['Authorization'])){
+        if(isset($_SESSION[$request->getCookieParams()['Authorization']]))
+            return $resp;
     }
-    else {
-        $resp = $resp->withBody(new Stream('./MainPage/HiddenMainPage.php'));
-        $resp = $resp->withStatus(302, "not authenticated");
-    }
+    $resp = $resp->withStatus(401, "not authenticated");
+    $resp = $resp->withBody(new Stream('./MainPage/HiddenMainPage.php'));
     return $resp;
 });
+
+
 
 $resp = $app->run();
 
