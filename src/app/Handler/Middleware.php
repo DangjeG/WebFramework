@@ -9,28 +9,26 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Middleware implements MiddlewareInterface{
 
-    private array $handlers;
+    private RequestHandlerInterface $requestHandler;
+    private MiddlewareDispatcher  $dispatcher;
 
-    public function __construct(array $handlers = [])
+    public function __construct(RequestHandlerInterface $requestHandler, MiddlewareDispatcher $dispatcher)
     {
-        $this->handlers = $handlers;
-    }
-
-    public function withAddedHandler(RequestHandler $next): MiddlewareInterface
-    {
-        $new = clone $this;
-        $new->handlers[] = $next;
-        return $new;
+        $this->requestHandler = $requestHandler;
+        $this->dispatcher = $dispatcher;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface{
 
-        foreach ($this->handlers as $nextHandler) {
-            $response = $nextHandler->handle($request);
-            if ($response->getStatusCode() != 200) {
-                return $response;
-            }
+        $response = $this->requestHandler->handle($request);
+
+        if($response->getStatusCode() > 299 || $response->getStatusCode() < 200) {
+            return $response;
         }
+
+        if ($this->dispatcher->hasNext())
+            return $this->dispatcher->getNext()->process($request, $handler);
+
         return $handler->handle($request);
     }
 }

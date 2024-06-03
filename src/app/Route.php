@@ -3,6 +3,7 @@
 namespace Dangje\WebFramework;
 
 use Dangje\WebFramework\Handler\Middleware;
+use Dangje\WebFramework\Handler\MiddlewareDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,18 +14,18 @@ class Route {
     private string $method;
     private string $path;
     private RequestHandlerInterface $handler;
-    private MiddlewareInterface $middleware;
+    private MiddlewareDispatcher  $dispatcher;
 
     public function __construct(
         string $method,
         string $path,
         RequestHandlerInterface $handler,
-        MiddlewareInterface $middleware = null,
+        array $middlewares = [],
     ) {
         $this->method = $method;
         $this->path = $path;
         $this->handler = $handler;
-        $this->middleware = is_null($middleware) ? new Middleware() : $middleware;
+        $this->dispatcher = new MiddlewareDispatcher($middlewares);
     }
 
     public function getMethod(): string
@@ -49,28 +50,19 @@ class Route {
         return $new;
     }
 
-    public function getMiddleware(): MiddlewareInterface
+    public function addMiddleware(RequestHandlerInterface $handler): void
     {
-        return $this->middleware;
-    }
-
-    public function setMiddleware(MiddlewareInterface $middleware): void
-    {
-        $this->middleware = $middleware;
-    }
-
-    public function addMiddlewareHandler(RequestHandlerInterface $handler): void
-    {
-        $this->middleware = $this->middleware->withAddedHandler($handler);
+        $this->dispatcher->add(new Middleware($handler, $this->dispatcher));
     }
 
     public function isMatch(ServerRequestInterface $request): bool
     {
         return $request->getMethod() === $this->getMethod() && $request->getUri()->getPath() === $this->getPath();
+
     }
 
     public function process(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->middleware->process($request, $this->handler);
+        return $this->dispatcher->dispatch($request, $this->handler);
     }
 }

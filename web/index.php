@@ -5,6 +5,7 @@ use Dangje\WebFramework\Factory\ResponseFactory;
 use Dangje\WebFramework\Factory\ServerRequestFactory;
 use Dangje\WebFramework\Message\Response;
 use Dangje\WebFramework\Message\Stream;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -16,7 +17,9 @@ $salt = "fdlkgmlklk";
 
 $app = new App($serverRequestFactory, $responseFactory);
 
+
 session_start();
+
 
 $app->add('GET', '/auth', function (ServerRequestInterface $request) {
     $resp = new Response(200, 'Hello World!');
@@ -31,12 +34,11 @@ $app->add('GET', '/logout', function (ServerRequestInterface $request) {
     return $resp->withBody(new Stream('./Auth/Auth.php'));
 });
 
-$app->add('POST', '/login', function (ServerRequestInterface $request) {
+$app->add('POST', '/login', function (ServerRequestInterface $request) use ($salt){
     $resp = new Response(200, 'OK');
-
     $email = $request->getParsedBody()['email'];
     $password = $request->getParsedBody()['pswd'];
-    $salt = "fdlkgmlklk";
+
 
     $emailHash = crypt($email, $salt);
 
@@ -62,12 +64,11 @@ $app->add('POST', '/login', function (ServerRequestInterface $request) {
     return $resp;
 });
 
-$app->add('POST', '/signin', function (ServerRequestInterface $request) {
+$app->add('POST', '/signin', function (ServerRequestInterface $request) use ($salt) {
     $resp = new Response(200, 'Hello World!');
 
     $email = $request->getParsedBody()['email'];
     $password = $request->getParsedBody()['pswd'];
-    $salt = "fdlkgmlklk";
 
 
     $emailHash = crypt($email, $salt);

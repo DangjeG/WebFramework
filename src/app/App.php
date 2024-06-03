@@ -44,7 +44,7 @@ class App
         $request = $this->serverRequestFactory->createServerRequest($method, $path);
         foreach ($this->routes as $route) {
             if ($route->isMatch($request)) {
-                $route->addMiddlewareHandler(new RequestHandler($handleFunc));
+                $route->addMiddleware(new RequestHandler($handleFunc));
                 return;
             }
         }
